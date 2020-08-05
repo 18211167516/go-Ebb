@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"log"
 )
 
 func indexHandler(w http.ResponseWriter,r *http.Request){
@@ -11,13 +10,11 @@ func indexHandler(w http.ResponseWriter,r *http.Request){
 }
 
 func helloHandler(w http.ResponseWriter,r *http.Request){
-	for k, v := range r.Header {
-		fmt.Fprintf(w, "Header[%q] = %q\n", k, v)
-	}
+	fmt.Fprintf(w,"URL.PATH=%q\n Header=%q\n",r.URL.Path,r.Header)
 }
 
 func main(){
 	http.HandleFunc("/",indexHandler)
 	http.HandleFunc("/hello",helloHandler)
-	log.Fatal(http.ListenAndServe(":8080",nil))
+	http.ListenAndServe(":8080",nil)
 }
