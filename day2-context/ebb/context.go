@@ -16,8 +16,6 @@ type Context struct{
 	//request info
 	Method string
 	Path string
-	//response
-	HttpCode int
 }
 
 
@@ -41,12 +39,19 @@ func (c *Context) Query(key string) string {
 }
 
 func (c *Context) Status(code int) {
-	c.HttpCode = code
 	c.Writer.WriteHeader(code)
 }
 
 func (c *Context) SetHeader(key string, value string) {
+	if value == "" {
+		c.Writer.Header().Del(key)
+		return
+	}
 	c.Writer.Header().Set(key, value)
+}
+
+func (c *Context) GetHeader(key string) string{
+	return c.Request.Header.Get(key)
 }
 
 func (c *Context) Write(data []byte){
