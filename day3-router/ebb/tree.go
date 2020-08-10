@@ -46,9 +46,6 @@ func parsePattern(pattern string) []string {
 	return parts
 }
 
-func (n *node) addRoute(){
-
-}
 
 func (n *node) insert(pattern string, parts []string, height int) {
 	if len(parts) == height {
