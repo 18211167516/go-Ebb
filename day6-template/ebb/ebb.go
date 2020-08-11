@@ -1,7 +1,9 @@
 package ebb
 
+
 import (
 	"net/http"
+	"html/template"
 )
 
 //定义框架请求处理方法
@@ -12,6 +14,11 @@ type Engine struct{
 	*RouterGroup //v4新增  顶级路由组
 	router *router 
 	groups []*RouterGroup // v4新增
+	//html/template
+	HTMLRender  *template.Template
+	HTMLdelimsLeft string
+	HTMLdelimsRight string
+	funcMap     template.FuncMap
 }
 
 //实例化结构体
@@ -30,6 +37,20 @@ func Default() *Engine{
 	return engine
 }
 
+
+func (engine *Engine) SetFuncMap(funcName string,f interface{}) {
+	funcMap := template.FuncMap{
+		funcName: f,
+	}
+	engine.funcMap = funcMap
+}
+
+func (engine *Engine) LoadHTMLGlob(pattern string) {
+	engine.HTMLdelimsLeft = "{"
+	engine.HTMLdelimsRight= "}"
+	engine.HTMLRender = template.Must(template.New("").Delims(engine.HTMLdelimsLeft,engine.HTMLdelimsRight).Funcs(engine.funcMap).ParseGlob(pattern))
+}
+
 //启动服务
 func (engine *Engine) Run(addr string) (err error){
 	return http.ListenAndServe(addr,engine)
@@ -39,6 +60,7 @@ func (engine *Engine) Run(addr string) (err error){
 //查找是否路由映射表存在，如果存在则调用，否则返回404
 func (engine *Engine) ServeHTTP(w http.ResponseWriter,req *http.Request){
 	c := newContext(w, req)
+	c.engine = engine
 	engine.handleHTTPRequest(c)
 }
 

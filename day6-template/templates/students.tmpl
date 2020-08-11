@@ -1,0 +1,9 @@
+<html>
+<body>
+    <p>hello, {.title}</p>
+    <p>now : {.now |formatDate}</p>
+    {range $index, $ele := .stuArr }
+    <p>{ $index }: { $ele.Name } is { $ele.Age } years old</p>
+    { end }
+</body>
+</html>

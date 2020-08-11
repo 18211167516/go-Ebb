@@ -21,6 +21,8 @@ type Context struct{
 	//middleware
 	handlers HandlersChain
 	index    int
+	//
+	engine *Engine
 }
 
 
@@ -96,8 +98,10 @@ func (c *Context) JSON(code int, obj interface{}) {
 	c.Write(data)
 }
 
-func (c *Context) HTML(code int,html string){
+func (c *Context) HTML(code int,TmpName string,data interface{}){
 	c.SetHeader("Content-Type", "text/html")
 	c.Status(code)
-	c.Write([]byte(html))
+	if err := c.engine.HTMLRender.ExecuteTemplate(c.Writer, TmpName, data); err != nil {
+		c.JSON(500, err.Error())
+	}
 }

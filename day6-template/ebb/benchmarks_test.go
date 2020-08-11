@@ -23,15 +23,6 @@ func BenchmarkOneRouteJSON(B *testing.B) {
 	runRequest(B, router, "GET", "/json")
 }
 
-func BenchmarkOneRouteHTML(B *testing.B) {
-	router := New()
-
-	router.GET("/html", func(c *Context) {
-		c.HTML(http.StatusOK, "<h1>Hello ebb</h1>")
-	})
-	runRequest(B, router, "GET", "/html")
-}
-
 func BenchmarkOneRouteString(B *testing.B) {
 	router := New()
 	router.GET("/text", func(c *Context) {

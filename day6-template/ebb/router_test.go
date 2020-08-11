@@ -96,3 +96,10 @@ func TestRecovery(t *testing.T){
 	_ = PerformRequest("POST","/login/123",bytes.NewBufferString(param),r)
 
 }
+
+func TestStaticFile(t *testing.T){
+	r := Default()
+	r.Static("/assets", "./")
+	w := PerformRequest("GET","/assets/go.mod",bytes.NewBufferString(""),r)
+	fmt.Printf(w.Body.String())
+}
