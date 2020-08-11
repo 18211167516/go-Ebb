@@ -24,6 +24,12 @@ func New() *Engine{
 	return engine
 }
 
+func Default() *Engine{
+	engine := New()
+	engine.Use(Logger(),Recovery())
+	return engine
+}
+
 //启动服务
 func (engine *Engine) Run(addr string) (err error){
 	return http.ListenAndServe(addr,engine)
