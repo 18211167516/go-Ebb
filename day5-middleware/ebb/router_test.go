@@ -76,19 +76,22 @@ func TestMiddleware(t *testing.T){
 func TestRecovery(t *testing.T){
 	r := New()
 
-	r.Use(Logger(),Recovery())
-	r.GET("/panic",func(c *Context) {
-		panic("err")
-	})
+	v1 := r.Group("/v1")
+	v1.Use(Logger(),Recovery())
+	{
+		v1.GET("/panic",func(c *Context) {
+			panic("err")
+		})
+	}
 
-	r.POST("/login/*filepath",func(c *Context) {
+	r.POST("/login/*name",func(c *Context) {
 		c.JSON(200, H{
-			"name": c.PostForm("name"),
+			"name": c.Param("name"),
 		})
 	})
 
 	param := `{"name":"baibai"}`;
-	_ = PerformRequest("GET","/panic",bytes.NewBufferString(param),r)
+	_ = PerformRequest("GET","/v1/panic",bytes.NewBufferString(param),r)
 
 	_ = PerformRequest("POST","/login/123",bytes.NewBufferString(param),r)
 
