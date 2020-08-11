@@ -54,7 +54,7 @@ func TestRouter(t *testing.T){
 func TestMiddleware(t *testing.T){
 	r := New()
 
-	//r.Use(Logger())
+	r.Use(Logger())
 	r.POST("/login/*filepath",Logger(),func(c *Context) {
 		c.JSON(200, H{
 			"name": c.PostForm("name"),
@@ -71,4 +71,25 @@ func TestMiddleware(t *testing.T){
 	json.Unmarshal([]byte(w.Body.String()),&s)
 
 	assert.Equal(t,s.Name,"1233","PostForm error")
+}
+
+func TestRecovery(t *testing.T){
+	r := New()
+
+	r.Use(Logger(),Recovery())
+	r.GET("/panic",func(c *Context) {
+		panic("err")
+	})
+
+	r.POST("/login/*filepath",func(c *Context) {
+		c.JSON(200, H{
+			"name": c.PostForm("name"),
+		})
+	})
+
+	param := `{"name":"baibai"}`;
+	_ = PerformRequest("GET","/panic",bytes.NewBufferString(param),r)
+
+	_ = PerformRequest("POST","/login/123",bytes.NewBufferString(param),r)
+
 }
